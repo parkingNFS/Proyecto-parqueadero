@@ -5,7 +5,6 @@ class usuario(models.Model):
     apellido = models.TextField("Apellido")
     
 
+    
     def __str__(self):
-        return f'{self.nombre}'
-    def __str__(self):
-        return f'{self.apellido}'    
+        return f'{self.nombre} {self.apellido}'   
