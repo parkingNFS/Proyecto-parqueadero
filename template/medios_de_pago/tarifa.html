@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SuperParking</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+text-align: center;
+background-color: #f4f4f4;
+}
+header {
+background: #1976d2;
+color: white;
+padding: 20px;
+font-size: 24px;
+}
+.container {
+margin-top: 30px;
+}
+input {
+padding: 5px;
+font-size: 16px;
+width: 60px;
+text-align: center;
+}
+button {
+padding: 10px 20px;
+margin: 5px;
+background: #1976d2;
+color: white;
+border: none;
+cursor: pointer;
+font-size: 16px;
+}
+button:hover {
+background: #0d47a1;
+}
+h2 {
+margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<header>SuperParking<br>Temporizador de parqueo</header>
+
+<div class="container">
+<p>Ingresa el tiempo:</p>
+Horas: <input type="number" id="horas" min="0" value="0">
+Minutos: <input type="number" id="minutos" min="0" value="0">
+
+<h1 id="display">00:00:00</h1>
+
+<button onclick="iniciar()">Iniciar</button>
+<button onclick="detener()">Detener</button>
+<button onclick="reiniciar()">Reiniciar</button>
+
+<h2 id="costo">Costo: $0 COP</h2>
+</div>
+
+<script>
+let tiempoRestante = 0;
+let intervalo = null;
+const tarifaHora = 2000; // Tarifa por hora en COP
+
+function iniciar() {
+let horas = parseInt(document.getElementById("horas").value) || 0;
+let minutos = parseInt(document.getElementById("minutos").value) || 0;
+
+tiempoRestante = (horas * 3600) + (minutos * 60);
+if (tiempoRestante <= 0) return;
+
+if (intervalo) clearInterval(intervalo);
+
+intervalo = setInterval(() => {
+if (tiempoRestante > 0) {
+tiempoRestante--;
+actualizarDisplay();
+calcularCosto();
+} else {
+clearInterval(intervalo);
+}
+}, 1000);
+}
+
+function detener() {
+clearInterval(intervalo);
+}
+
+function reiniciar() {
+clearInterval(intervalo);
+tiempoRestante = 0;
+document.getElementById("display").innerText = "00:00:00";
+document.getElementById("costo").innerText = "Costo: $0 COP";
+}
+
+function actualizarDisplay() {
+let horas = Math.floor(tiempoRestante / 3600);
+let minutos = Math.floor((tiempoRestante % 3600) / 60);
+let segundos = tiempoRestante % 60;
+
+document.getElementById("display").innerText =
+String(horas).padStart(2, '0') + ":" +
+String(minutos).padStart(2, '0') + ":" +
+String(segundos).padStart(2, '0');
+}
+
+function calcularCosto() {
+let horasUsadas = ( ( (parseInt(document.getElementById("horas").value) * 3600) + (parseInt(document.getElementById("minutos").value) * 60) ) - tiempoRestante ) / 3600;
+let costo = horasUsadas * tarifaHora;
+document.getElementById("costo").innerText = "Costo: $" + costo.toFixed(0) + " COP";
+}
+</script>
+
+</body>
+</html>

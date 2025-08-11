@@ -1,0 +1,153 @@
+<html>
+
+  <head>
+  <script src="../js/bootstrap.bundle.js"></script>
+  <script type="text/javascript" src="../js/jquery.js"></script>
+  <meta charset="utf-8">
+ </head>
+ <head>
+ <meta charset="UTF-8">
+ <title>Iniciar Sesión - SuperParking</title>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+ <style>
+ body {
+ background: linear-gradient(to right, #74ebd5, #ACB6E5);
+ min-height: 100vh;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-family: 'Segoe UI', sans-serif;
+}
+
+ .login-box {
+ background-color: white;
+ padding: 40px;
+ border-radius: 12px;
+ box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+ width: 100%;
+ max-width: 400px;
+ text-align: center;
+}
+
+ .login-box h2 {
+ margin-bottom: 30px;
+ color: #333;
+}
+
+ .form-control {
+ margin-bottom: 20px; 
+ border-radius: 10px;
+}
+
+ .btn-primary {
+ width: 100%;
+ border-radius: 10px;
+}
+
+ .login-box small {
+ color: #666;
+}
+</style>
+</head>
+
+<body>
+  <center>
+    <br><br><br><br><br><br><br> <br><br><br><br><br><br><br>
+
+    <br><br><br>
+    <i><b>
+        <font size="12">
+          <tittle>REGISTRATE</tittle>
+        </font>
+      </B></i>
+    <font size="11"> <i>
+        <h4> ¡Bienvenido a tu pagina web de parking favorita! </h4>
+      </i> </font>
+    <br>
+    <i><b>
+        <font size="6">
+          <tittle>ingresa tu Nombre</tittle>
+        </font>
+      </B></i>
+    <br><br>
+    <label><input type="text" id="nombre" class="form-control" placeholder="Ingresa Tu Nombre" /></label>
+    <br><br><br>
+    <i><b>
+        <font size="6">
+          <tittle>ingresa tu Apellido</tittle>
+        </font>
+      </B></i>
+    <br><br>
+    <label><input type="text" id="apellido" class="form-control" placeholder="Ingresa Tu Apellido" /></label>
+    <br><br><br>
+    <i><b>
+        <font size="6">
+          <tittle>ingresa tu correo electronico</tittle>
+        </font>
+      </B></i>
+    <br><br>
+    <label><input type="email" id="email" class="form-control" placeholder="ejemplo@gmail.com" /></label>
+    <br><br>
+    <i><b>
+        <font size="6">
+          <tittle>crea tu contraseña</tittle>
+        </font>
+      </B></i>
+    <br><br>
+    <label><input type="password" id="password" class="form-control" placeholder="Ingresa Tu Contraseña" /></label>
+    <br><br><br><br>
+    <button type="button" id="registrate" class="btn btn-primary"><a class="nav-link active" href="index3.html" ></a></li>Registrate</button>
+    <br><br><br><br>
+    
+
+    <div id="resultado">
+
+
+    </div>| 
+    <i><b>
+        <font size="6">
+          <tittle>O utiliza tus redes externas</tittle>
+        </font>
+      </B></i>
+    <br><br><br><br>
+  </center>
+</body>
+
+</html>
+<script>
+  $(document).ready(function () {
+
+    $("#registrate").click(function(){
+      var nombre = $("#nombre").val();
+      var apellido = $("#apellido").val();
+      var password = $("#password").val();
+      var email = $("#email").val();
+
+      var datos = {
+        "nombre": nombre,
+        "apellido": apellido,
+        "password": password,
+        "correo": email,
+        "rol_id": null
+      }
+
+      $.ajax({
+        url: "http://127.0.0.1:8000/api/usuarios/",
+        type: "POST",
+        data: datos,
+        success: function (valor){
+          parent.location='index3.html'
+          console.log(valor);
+
+        },
+        error: function (error) {
+          alert('error al registrar');
+          console.error(error);
+        }
+
+      });
+
+
+    })
+  });
+</script>

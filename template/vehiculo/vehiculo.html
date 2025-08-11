@@ -1,0 +1,173 @@
+<html 
+lang="es">
+<head>
+   <script src="../js/bootstrap.bundle.js"></script>
+  <script type="text/javascript" src="../js/jquery.js"></script>
+  <meta charset="utf-8">
+<meta charset="UTF-8">
+<title>Vehiculo- SuperParking</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f2f2f2;
+text-align: center;
+}
+
+.header {
+background-color: #007BFF;
+color: white;
+padding: 20px;
+}
+
+.tiempo-container {
+margin-top: 40px;
+}
+
+.contador {
+font-size: 60px;
+font-weight: bold;
+margin: 20px 0;
+}
+
+input[type="number"] {
+font-size: 18px;
+padding: 5px;
+width: 80px;
+}
+
+.btn {
+font-size: 18px;
+padding: 10px 20px;
+margin: 5px;
+background-color: #007BFF;
+color: white;
+border: none;
+cursor: pointer;
+}
+
+.btn:hover {
+background-color: #0056b3;
+}
+</style>
+</head>
+<div class="header">
+<h1>SuperParking</h1>
+<div class="header">
+</div>
+
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Información del Vehículo</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f4;
+padding: 20px;
+}
+
+.contenedor {
+background-color: white;
+padding: 20px;
+border-radius: 10px;
+width: 300px;
+margin: auto;
+box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+text-align: center;
+color: #333;
+}
+
+label {
+display: block;
+margin-top: 15px;
+font-weight: bold;
+}
+
+input, textarea {
+width: 100%;
+padding: 8px;
+margin-top: 5px;
+border: 1px solid #ccc;
+border-radius: 5px;
+}
+
+button {
+margin-top: 20px;
+width: 100%;
+padding: 10px;
+background-color: #007BFF;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+button:hover {
+background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+<div class="contenedor">
+<h2>Mi Vehículo</h2>
+
+<label for="placa">Placa:</label>
+<input type="text" id="placa" name="placa" placeholder="Placa de vehiculo">
+
+<label for="modelo">Modelo del Vehículo:</label>
+<input type="text" id="modelo" name="modelo"placeholder="Modelo de vehiculo" >
+
+<label for="tipo">Tipo de Vehículo:</label>
+<input type="text" id="tipo" name="tipo" placeholder="Tipo de vehiculo">
+
+<label for="categoria">Categoría del Vehículo:</label>
+<input type="text" id="categoria" name="categoria" placeholder="Categoria de vehiculo">
+
+<label for="documentacion">Documentación:</label>
+<textarea id="documentacion" name="documentacion" placeholder="Documentacion" rows="4"></textarea>
+
+<button type="submit" id="guardar">Guardar Información</button>
+</div>
+</body>
+</html>
+
+
+<script>
+  $(document).ready(function(){
+    $("#guardar").click(function(){
+
+      var placa = $("#placa").val();
+      var modelo = $("#modelo").val();
+      var tipo = $("#tipo").val();
+      var categoria = $("#categoria").val();
+      var documentacion = $("#documentacion").val();
+    
+       
+      var datos = {
+    "placa": placa,
+    "modelo": modelo,
+    "tipo": tipo,
+    "categoria": categoria,
+    "documentacion": documentacion
+      
+      }
+     
+     $.ajax({
+        url: "http://127.0.0.1:8000/api/vehiculo/",
+        type: "POST",
+        data: datos,
+      success: function (valor) {
+          alert('Usuario registrado con exito');
+          console.log(valor);
+      }
+        
+            });
+
+
+    })
+  }); 
+</script>

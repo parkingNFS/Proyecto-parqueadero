@@ -1,0 +1,159 @@
+
+<html 
+lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tiempo - SuperParking</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f2f2f2;
+text-align: center;
+}
+
+.header {
+background-color: #007BFF;
+color: white;
+padding: 20px;
+}
+
+.tiempo-container {
+margin-top: 40px;
+}
+
+.contador {
+font-size: 60px;
+font-weight: bold;
+margin: 20px 0;
+}
+
+input[type="number"] {
+font-size: 18px;
+padding: 5px;
+width: 80px;
+}
+
+.btn {
+font-size: 18px;
+padding: 10px 20px;
+margin: 5px;
+background-color: #007BFF;
+color: white;
+border: none;
+cursor: pointer;
+}
+
+.btn:hover {
+background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>SuperParking</h1>
+<p>Temporizador de parqueo</p>
+</div>
+
+<div class="tiempo-container">
+<h2>Ingresa el tiempo</h2>
+
+<label>
+Horas:
+<input type="number" id="horas" min="0" value="0">
+</label>
+<label>
+Minutos:
+<input type="number" id="minutos" min="0" max="59" value="0">
+</label><br><br>
+
+<div id="contador" class="contador">00:00:00</div>
+
+<button class="btn" onclick="iniciar()">Iniciar</button>
+<button class="btn" onclick="detener()">Detener</button>
+<button class="btn" onclick="reiniciar()">Reiniciar</button>
+</div>
+
+<script>
+let tiempoRestante = 0;
+let intervalo;
+
+function formatearTiempo(t) {
+let h = Math.floor(t / 3600);
+let m = Math.floor((t % 3600) / 60);
+let s = t % 60;
+
+return (
+(h < 10 ? "0" + h : h) + ":" +
+(m < 10 ? "0" + m : m) + ":" +
+(s < 10 ? "0" + s : s)
+);
+}
+
+function actualizarPantalla() {
+document.getElementById("contador").textContent = formatearTiempo(tiempoRestante);
+}
+
+function iniciar() {
+if (intervalo) clearInterval(intervalo);
+
+const horas = parseInt(document.getElementById("horas").value);
+const minutos = parseInt(document.getElementById("minutos").value);
+
+tiempoRestante = horas * 3600 + minutos * 60;
+
+actualizarPantalla();
+
+intervalo = setInterval(() => {
+if (tiempoRestante > 0) {
+tiempoRestante--;
+actualizarPantalla();
+} else {
+clearInterval(intervalo);
+alert("¡Tiempo finalizado!");
+}
+}, 1000);
+}
+
+function detener() {
+clearInterval(intervalo);
+}
+
+function reiniciar() {
+clearInterval(intervalo);
+tiempoRestante = 0;
+actualizarPantalla();
+}
+</script>
+
+</body>
+</html>
+<script>
+  $(document).ready(function () {
+
+    $("#registrate").click(function () {
+
+      var horas = $("#horas").val();
+      var minutos = $("#minutos").val();
+      var contador = $("#contador").val();
+
+      var datos = {
+        
+    "horas": horas,
+    "minutos": minutos,
+    "contador": null
+      
+    
+      }
+     
+     $.ajax({
+        url: "http://127.0.0.1:8000/api/tiempo/",
+        type: "POST",
+        data: datos,
+        
+      });
+     });
+    });
+
+  
+</script>
