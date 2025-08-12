@@ -37,174 +37,152 @@
 </head>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-  <title>Reservas - Clientes Frecuentes</title>
-
+  <title>Reservas Clientes Frecuentes</title>
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
   <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
   <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
-
   <link href="../assets/css/black-dashboard.css?v=1.0.0" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.css" rel="stylesheet" />
   <link href="../assets/demo/demo.css" rel="stylesheet" />
+  <style>
+    .login-center {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 
 <body class="">
-  <div class="wrapper">
-    <div class="main-panel">
-      <div class="content">
-        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
-          <div class="col-md-5">
-            <div class="card" id="loginCard">
-              <div class="card-header text-center">
-                <h4 class="card-title">Inicio de sesión</h4>
-              </div>
-              <div class="card-body">
-                <form id="loginForm">
-                  <div class="form-group">
-                    <label for="email">Correo</label>
-                    <input id="email" type="email" class="form-control" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input id="password" type="password" class="form-control" required>
-                  </div>
-                  <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
-                </form>
-              </div>
-            </div>
+  <div class="container login-center">
+    <div class="card" style="max-width:400px; width:100%;">
+      <div class="card-header text-center">
+        <h4>Iniciar Sesión</h4>
+      </div>
+      <div class="card-body">
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Correo</label>
+            <input type="email" id="email" class="form-control" required>
           </div>
-
-
-          <div class="col-md-6" style="display:none" id="reserveCard">
-            <div class="card">
-              <div class="card-header">
-                <h4 class="card-title">Nueva reserva</h4>
-              </div>
-              <div class="card-body">
-                <div id="welcome" class="mb-2 text-info"></div>
-                <div class="form-group">
-                  <label for="date">Fecha</label>
-                  <input id="date" type="date" class="form-control" required>
-                </div>
-                <div class="form-group">
-                  <label for="start">Hora inicio</label>
-                  <input id="start" type="time" class="form-control" required>
-                </div>
-                <div class="form-group">
-                  <label for="end">Hora fin</label>
-                  <input id="end" type="time" class="form-control" required>
-                </div>
-                <label>Selecciona un espacio</label>
-                <div class="d-flex flex-wrap" id="spacesGrid" style="gap:8px;"></div>
-                <button id="reserveBtn" class="btn btn-success btn-block mt-3">Reservar</button>
-                <div id="result" class="mt-3"></div>
-              </div>
-            </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="password" class="form-control" required>
           </div>
-        </div>
-
-        <div class="row mt-4" id="historyRow" style="display:none;">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
-                <h4 class="card-title">Historial de reservas</h4>
-              </div>
-              <div class="card-body" id="history">No hay reservas aún.</div>
-            </div>
-          </div>
-        </div>
+          <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+        </form>
       </div>
     </div>
   </div>
 
+  <!-- Tarjeta de reservas -->
+  <div class="container" id="reserveCard" style="display:none; margin-top:40px;">
+    <div class="card">
+      <div class="card-header">
+        <h4 id="welcome"></h4>
+      </div>
+      <div class="card-body">
+        <form id="reserveForm">
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Hora de inicio</label>
+            <input type="time" id="startTime" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Hora de fin</label>
+            <input type="time" id="endTime" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Espacio</label>
+            <select id="space" class="form-control" required>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Reservar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="container" id="historyRow" style="display:none; margin-top:20px;">
+    <div class="card">
+      <div class="card-header">
+        <h4>Historial de Reservas</h4>
+      </div>
+      <div class="card-body" id="historyList"></div>
+    </div>
+  </div>
+
   <script>
-    const demoUsers = [{ email: 'swcubillos@gmail.com', password: '123456789', name: 'Diego Cubillos' }];
     const loginForm = document.getElementById('loginForm');
-    const loginCard = document.getElementById('loginCard');
     const reserveCard = document.getElementById('reserveCard');
-    const welcome = document.getElementById('welcome');
-    const spacesGrid = document.getElementById('spacesGrid');
-    const reserveBtn = document.getElementById('reserveBtn');
-    const result = document.getElementById('result');
-    const historyEl = document.getElementById('history');
+    const loginCard = document.querySelector('.login-center');
     const historyRow = document.getElementById('historyRow');
+    const welcome = document.getElementById('welcome');
+    const reserveForm = document.getElementById('reserveForm');
+    const historyList = document.getElementById('historyList');
 
-    const totalSpaces = 8;
-    let selectedSpace = null;
-
-    function renderSpaces() {
-      spacesGrid.innerHTML = '';
-      for (let i = 1; i <= totalSpaces; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-outline-info';
-        btn.textContent = 'Espacio ' + i;
-        btn.onclick = () => {
-          document.querySelectorAll('#spacesGrid button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          selectedSpace = i;
-        };
-        spacesGrid.appendChild(btn);
-      }
-    }
-
-    function saveReservationToLocal(res) {
-      const key = 'reservas_frecuentes';
-      const arr = JSON.parse(localStorage.getItem(key) || '[]');
-      arr.unshift(res);
-      localStorage.setItem(key, JSON.stringify(arr));
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const arr = JSON.parse(localStorage.getItem('reservas_frecuentes') || '[]');
-      if (arr.length === 0) { historyEl.textContent = 'No hay reservas aún.'; return; }
-      historyEl.innerHTML = arr.map(r => `<div>${r.user} — ${r.date} ${r.start}–${r.end} — Espacio ${r.space}</div>`).join('');
-    }
-
+    // Iniciar sesión con cualquier correo y contraseña
     loginForm.addEventListener('submit', e => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
-      const pass = document.getElementById('password').value;
-      const user = demoUsers.find(u => u.email === email && u.password === pass);
-      if (!user) { alert('Credenciales inválidas'); return; }
+      const pass = document.getElementById('password').value.trim();
+
+      if (!email || !pass) {
+        alert('Debes ingresar correo y contraseña');
+        return;
+      }
+
+      const user = { email, name: email.split('@')[0] };
       sessionStorage.setItem('user', JSON.stringify(user));
-      loginCard.parentElement.style.display = 'none';
+
+      loginCard.style.display = 'none';
       reserveCard.style.display = 'block';
-      historyRow.style.display = 'flex';
+      historyRow.style.display = 'block';
       welcome.textContent = `Hola, ${user.name} (Cliente frecuente)`;
-      renderSpaces();
       renderHistory();
     });
 
-    reserveBtn.addEventListener('click', () => {
-      const user = JSON.parse(sessionStorage.getItem('user') || null);
-      if (!user) { alert('Inicia sesión primero.'); return; }
+    // Guardar reserva
+    reserveForm.addEventListener('submit', e => {
+      e.preventDefault();
       const date = document.getElementById('date').value;
-      const start = document.getElementById('start').value;
-      const end = document.getElementById('end').value;
-      if (!date || !start || !end) { alert('Completa fecha y hora.'); return; }
-      if (!selectedSpace) { alert('Selecciona un espacio.'); return; }
-      if (end <= start) { alert('Hora de fin debe ser posterior.'); return; }
-      const arr = JSON.parse(localStorage.getItem('reservas_frecuentes') || '[]');
-      const conflict = arr.find(r => r.space == selectedSpace && r.date === date && !(end <= r.start || start >= r.end));
-      if (conflict) { alert('Espacio ocupado en ese rango.'); return; }
-      const reservation = { user: user.name, email: user.email, date, start, end, space: selectedSpace };
-      saveReservationToLocal(reservation);
-      result.innerHTML = `<div class="alert alert-success">Reserva confirmada: Espacio ${selectedSpace}</div>`;
-      document.getElementById('date').value = '';
-      document.getElementById('start').value = '';
-      document.getElementById('end').value = '';
-      selectedSpace = null;
-      document.querySelectorAll('#spacesGrid button').forEach(b => b.classList.remove('active'));
+      const start = document.getElementById('startTime').value;
+      const end = document.getElementById('endTime').value;
+      const space = document.getElementById('space').value;
+      const user = JSON.parse(sessionStorage.getItem('user'));
+
+      let reservas = JSON.parse(localStorage.getItem('reservas') || '[]');
+      reservas.push({ user: user.email, date, start, end, space });
+      localStorage.setItem('reservas', JSON.stringify(reservas));
+
+      alert('Reserva guardada');
+      renderHistory();
+      reserveForm.reset();
     });
 
-    renderHistory();
+    function renderHistory() {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      let reservas = JSON.parse(localStorage.getItem('reservas') || '[]');
+      reservas = reservas.filter(r => r.user === user.email);
+      historyList.innerHTML = reservas.length
+        ? `<ul>${reservas.map(r => `<li>${r.date} ${r.start}-${r.end} | Espacio: ${r.space}</li>`).join('')}</ul>`
+        : '<p>No tienes reservas.</p>';
+    }
   </script>
 </body>
-
 </html>
