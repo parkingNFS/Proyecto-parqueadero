@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Parqueadero / Registro de Entrada y Salida</title>
+<style>
+:root{--accent:#2563eb;--ok:#059669;--bad:#ef4444;--muted:#6b7280}
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; padding:20px; background:#f8fafc}
+.container{max-width:980px;margin:0 auto;background:white;padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+header{display:flex;gap:16px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:20px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+input, button, select{padding:8px 10px;border-radius:8px;border:1px solid #e6e9ee;font-size:14px}
+button{background:var(--accent);color:white;border:none;cursor:pointer}
+button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(37,99,235,0.12)}
+
+.stats{display:flex;gap:12px;margin-top:16px}
+.card{flex:1;padding:12px;border-radius:10px;background:#f8fafc;text-align:center}
+.card h3{margin:0;font-size:28px}
+.card p{margin:6px 0 0;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-top:18px}
+.panel{background:white;padding:12px;border-radius:10px;border:1px solid #f1f5f9}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;text-align:left;border-bottom:1px solid #f1f5f9;font-size:14px}
+.badge{display:inline-block;padding:6px 8px;border-radius:999px;font-weight:600;font-size:13px}
+.occupied{background:rgba(239,68,68,0.12);color:var(--bad)}
+.available{background:rgba(5,150,105,0.12);color:var(--ok)}
+.muted{color:var(--muted)}
+.spot{display:flex;gap:8px;align-items:center}
+.spot .num{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:#eef2ff;color:var(--accent);font-weight:700}
+.small{font-size:13px;color:var(--muted)}
+.actions button{margin-right:6px}
+
+@media (max-width:900px){
+.grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Parqueadero — Registro de entradas y salidas</h1>
+<div class="controls">
+<label class="small">Total plazas <input id="totalSpotsInput" type="number" min="1" value="12" style="width:90px"></label>
+<button id="applyTotalBtn">Aplicar</button>
+<button id="resetBtn" class="ghost">Reiniciar datos</button>
+</div>
+</header>
+
+<div class="stats" id="stats">
+<div class="card">
+<p class="small">Plazas disponibles</p>
+<h3 id="availableCount">--</h3>
+</div>
+<div class="card">
+<p class="small">Plazas ocupadas</p>
+<h3 id="occupiedCount">--</h3>
+</div>
+<div class="card">
+<p class="small">Última acción</p>
+<p id="lastAction" class="small muted">—</p>
+</div>
+</div>
+
+<div class="grid">
+<div class="panel">
+<h3 style="margin-top:0">Registrar entrada</h3>
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+<input id="plateInput" placeholder="Placa (ej. ABC123)" style="flex:1">
+<button id="enterBtn">Registrar entrada</button>
+</div>
+
+<h3 style="margin-top:12px">Registrar salida</h3>
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+<input id="searchInput" placeholder="Buscar por placa o número de puesto" style="flex:1">
+<button id="exitBtn" class="ghost">Registrar salida</button>
+</div>
+
+<hr>
+<h3 style="margin-bottom:6px">Puestos</h3>
+<div id="spotsLegend" class="small muted">Leyenda: <span class="badge available">Disponible</span> <span class="badge occupied">Ocupado</span></div>
+<div style="margin-top:8px;max-height:360px;overflow:auto">
+<table id="spotsTable">
+<thead>
+<tr><th>Puesto</th><th>Estado</th><th>Placa</th><th>Entrada</th><th>Acciones</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+
+<div class="panel">
+<h3 style="margin-top:0">Registro / Log</h3>
+<div style="max-height:520px;overflow:auto;padding-top:6px" id="log"></div>
+</div>
+</div>
+</div>
+
+<script>
+// Datos en localStorage para persistencia simple
+const STORAGE_KEY = 'parqueadero_v1';
+
+function nowStr(){
+return new Date().toLocaleString();
+}
+
+function save(state){
+localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function load(){
+const json = localStorage.getItem(STORAGE_KEY);
+if(!json) return null;
+try{ return JSON.parse(json); }catch(e){ return null; }
+}
+
+function createState(total = 12){
+const spots = [];
+for(let i=1;i<=total;i++) spots.push({num:i, occupied:false, plate:null, timeIn:null});
+return {total, spots, log:[]};
+}
+
+// UI refs
+const totalSpotsInput = document.getElementById('totalSpotsInput');
+const applyTotalBtn = document.getElementById('applyTotalBtn');
+const resetBtn = document.getElementById('resetBtn');
+const plateInput = document.getElementById('plateInput');
+const enterBtn = document.getElementById('enterBtn');
+const searchInput = document.getElementById('searchInput');
+const exitBtn = document.getElementById('exitBtn');
+const spotsTableBody = document.querySelector('#spotsTable tbody');
+const availableCountEl = document.getElementById('availableCount');
+const occupiedCountEl = document.getElementById('occupiedCount');
+const lastActionEl = document.getElementById('lastAction');
+const logEl = document.getElementById('log');
+
+let state = load() || createState(parseInt(totalSpotsInput.value,10)||12);
+totalSpotsInput.value = state.total;
+
+function render(){
+// counts
+const occupied = state.spots.filter(s=>s.occupied).length;
+const available = state.total - occupied;
+availableCountEl.textContent = available;
+occupiedCountEl.textContent = occupied;
+
+// table
+spotsTableBody.innerHTML = '';
+state.spots.forEach(s=>{
+const tr = document.createElement('tr');
+const status = s.occupied ? `<span class="badge occupied">Ocupado</span>` : `<span class="badge available">Disponible</span>`;
+tr.innerHTML = `
+<td class="spot"><div class="num">${s.num}</div></td>
+<td>${status}</td>
+<td>${s.plate || '-'} </td>
+<td>${s.timeIn ? s.timeIn : '-'}</td>
+<td class="actions">
+${s.occupied ? `<button data-num="${s.num}" class="exitBtn">Salida</button>` : `<button data-num="${s.num}" class="takeBtn ghost">Ocupar</button>`}
+</td>`;
+spotsTableBody.appendChild(tr);
+});
+
+// log
+logEl.innerHTML = state.log.slice().reverse().map(item=>`<div style="padding:6px;border-bottom:1px solid #f3f4f6"><strong>${item.title}</strong><div class="small muted">${item.time}</div><div class="small">${item.note || ''}</div></div>`).join('');
+
+save(state);
+}
+
+function pushLog(title, note){
+const entry = {time: nowStr(), title, note};
+state.log.push(entry);
+lastActionEl.textContent = `${title} — ${entry.time}`;
+render();
+}
+
+function findFirstAvailable(){
+return state.spots.find(s=>!s.occupied) || null;
+}
+
+function registerEntry(plate){
+if(!plate) { alert('Ingresa la placa.'); return; }
+plate = plate.trim().toUpperCase();
+// check if already parked
+const already = state.spots.find(s=>s.plate === plate && s.occupied);
+if(already){ alert(`La placa ${plate} ya está registrada en el puesto ${already.num}.`); return; }
+
+const spot = findFirstAvailable();
+if(!spot){ alert('No hay plazas disponibles.'); return; }
+spot.occupied = true;
+spot.plate = plate;
+spot.timeIn = nowStr();
+pushLog(`Entrada: ${plate}`, `Asignado puesto ${spot.num}`);
+plateInput.value = '';
+}
+
+function registerExitBySpot(num){
+const spot = state.spots.find(s=>s.num==num);
+if(!spot || !spot.occupied){ alert('El puesto no está ocupado.'); return; }
+const plate = spot.plate;
+const timeIn = spot.timeIn ? new Date(spot.timeIn) : null;
+// clear
+spot.occupied = false;
+spot.plate = null;
+spot.timeIn = null;
+pushLog(`Salida: ${plate}`, `Liberado puesto ${num}`);
+}
+
+function registerExitByPlate(query){
+if(!query) { alert('Ingresa placa o número de puesto.'); return; }
+query = query.trim().toUpperCase();
+// numeric ?
+if(/^[0-9]+$/.test(query)){
+registerExitBySpot(parseInt(query,10));
+return;
+}
+// search by plate
+const spot = state.spots.find(s=>s.plate===query && s.occupied);
+if(!spot){ alert('No se encontró la placa ocupando un puesto.'); return; }
+registerExitBySpot(spot.num);
+}
+
+// event listeners
+enterBtn.addEventListener('click', ()=> registerEntry(plateInput.value));
+plateInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') registerEntry(plateInput.value); });
+
+exitBtn.addEventListener('click', ()=> registerExitByPlate(searchInput.value));
+searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') registerExitByPlate(searchInput.value); });
+
+applyTotalBtn.addEventListener('click', ()=>{
+const v = Math.max(1, parseInt(totalSpotsInput.value,10)||1);
+if(v === state.total) { alert('El número de plazas es el mismo.'); return; }
+if(!confirm('Cambiar el total de plazas reiniciará el estado actual (se perderán registros). Continuar?')) return;
+state = createState(v);
+pushLog('Configuración', `Total de plazas ajustado a ${v}`);
+save(state);
+render();
+});
+
+resetBtn.addEventListener('click', ()=>{
+if(!confirm('¿Deseas reiniciar todos los datos del parqueadero?')) return;
+state = createState(parseInt(totalSpotsInput.value,10)||12);
+pushLog('Reinicio', 'Datos reiniciados manualmente');
+save(state);
+render();
+});
+
+// delegate table actions
+spotsTableBody.addEventListener('click', (e)=>{
+const btn = e.target.closest('button');
+if(!btn) return;
+const num = btn.dataset.num;
+if(btn.classList.contains('takeBtn')){
+const plate = prompt('Placa para ocupar el puesto ' + num + ':');
+if(plate) registerEntry(plate);
+} else if(btn.classList.contains('exitBtn')){
+if(confirm('Registrar salida del puesto ' + num + '?')) registerExitBySpot(num);
+}
+});
+
+// initial render
+render();
+
+</script>
+</body>
+</html>
