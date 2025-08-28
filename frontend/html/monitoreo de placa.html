@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <title>
+    Eichparking - Sistema de Seguridad
+  </title>
+  <!-- Fonts and icons -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <!-- Nucleo Icons -->
+  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="../assets/css/black-dashboard.css?v=1.0.0" rel="stylesheet" />
+  <style>
+    .placa-preview {
+      background-color: #ffffff;
+      border: 2px solid #333;
+      border-radius: 4px;
+      color: #333;
+      font-family: 'Courier New', monospace;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      padding: 10px;
+      text-align: center;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    .camera-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background-color: #000;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+    .camera-feed {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .camera-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .scan-animation {
+      width: 80%;
+      height: 3px;
+      background-color: #000000;
+      position: absolute;
+      box-shadow: 0 0 10px #00ff00;
+      animation: scan 2s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 10%; }
+      50% { top: 90%; }
+      100% { top: 10%; }
+    }
+    .location-badge {
+      font-size: 1.2em;
+      padding: 10px 15px;
+      border-radius: 20px;
+      background-color: #1e8e3e;
+      color: white;
+      margin-top: 15px;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body class="">
+  <div class="wrapper">
+    <div class="sidebar">
+      <div class="sidebar-wrapper">
+        <div class="logo">
+          <a href="javascript:void(0)" class="simple-text logo-mini">
+            EP
+          </a>
+          <a href="javascript:void(0)" class="simple-text logo-normal">
+            EICHPARKING
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="active">
+            <a href="./dashboard.html">
+              <i class="tim-icons icon-chart-pie-36"></i>
+              <p>Registro de Entrada</p>
+            </a>
+          </li>
+          <li>
+            <a href="./map.html">
+              <i class="tim-icons icon-pin"></i>
+              <p>Mapas</p>
+            </a>
+          </li>
+          <li>
+            <a href="./rtl.html">
+              <i class="tim-icons icon-world"></i>
+              <p>Salida</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="main-panel">
+      <div class="content">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="title">Proceso de Seguridad - Reconocimiento de Placa</h5>
+              </div>
+              <div class="card-body">
+                <div class="camera-container">
+                  <div class="camera-overlay">
+                    <span>Cámara de parqueadero</span>
+                  </div>
+                  <!-- En un sistema real, aquí iría el feed de una cámara real -->
+                </div>
+                
+                <form id="registroForm">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Placa del Vehículo</label>
+                        <input type="text" class="form-control" id="placa" 
+                               placeholder="Ej: ABC123" required 
+                               pattern="[A-Z0-9]{6}"
+                               title="Formato de placa: 3 letras seguido de 3 números (ej: ABC123)">
+                        <div class="placa-preview" id="placaPreview">placa</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Hora de Entrada</label>
+                        <input type="text" class="form-control" id="horaEntrada" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Tipo de Documento</label>
+                        <select class="form-control" id="tipoDocumento" required>
+                          <option value="">Seleccione</option>
+                          <option value="CC">Cédula de Ciudadanía</option>
+                          <option value="CE">Cédula de Extranjería</option>
+                          <option value="TI">Tarjeta de Identidad</option>
+                          <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" class="form-control" id="numeroDocumento" required>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" class="form-control" id="nombreCompleto" required>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <button type="submit" class="btn btn-fill btn-primary">
+                    <i class="tim-icons icon-camera-18"></i> Escanear Placa y Registrar
+                  </button>
+                </form>
+                
+                <div id="resultadoContainer" style="display: none; margin-top: 20px;">
+                  <div class="alert alert-success">
+                    <h4>¡Registro exitoso!</h4>
+                    <p>Su vehículo ha sido registrado correctamente en el sistema.</p>
+                    <p>Ubicación asignada: <span class="location-badge" id="ubicacionAsignada">B3-42</span></p>
+                    <p>Guarde esta información para localizar su vehículo posteriormente.</p>
+                    <p>Hora de registro: <span id="horaRegistroCompleta"></span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="title">Información de Seguridad</h5>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info">
+                  <h6>Proceso de reconocimiento de placas</h6>
+                  <p>Nuestro sistema automatizado capturará y verificará la placa de su vehículo para mayor seguridad.</p>
+                </div>
+                
+                <div class="alert alert-warning">
+                  <h6>Instrucciones importantes</h6>
+                  <ul>
+                    <li>Asegúrese de que la placa sea visible</li>
+                    <li>Verifique que los datos ingresados sean correctos</li>
+                    <li>Anote la ubicación asignada a su vehículo</li>
+                    <li>Conserve su ticket de entrada</li>
+                  </ul>
+                </div>
+                
+                <div class="alert alert-primary">
+                  <h6>Beneficios del sistema</h6>
+                  <ul>
+                    <li>Mayor seguridad para su vehículo</li>
+                    <li>Localización rápida al regresar</li>
+                    <li>Control de acceso automatizado</li>
+                    <li>Monitoreo 24/7</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="footer">
+        <div class="container-fluid">
+          <div class="copyright">
+            © <script>document.write(new Date().getFullYear())</script> 
+            Hecho con <i class="tim-icons icon-heart-2"></i> por 
+            <a href="javascript:void(0)" target="_blank">Eichparking</a> - Tu lugar seguro para tu vehículo.
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!--   Core JS Files   -->
+  <script src="../assets/js/core/jquery.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <!--  Notifications Plugin    -->
+  <script src="../assets/js/plugins/bootstrap-notify.js"></script>
+  <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/black-dashboard.min.js?v=1.0.0"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Actualizar hora actual
+      
+      
+      // Inicializar y actualizar cada segundo
+      actualizarHora();
+      setInterval(actualizarHora, 1000);
+      
+      // Actualizar vista previa de placa
+      $('#placa').on('input', function() {
+        let placa = $(this).val().toUpperCase();
+        // Limitar a 6 caracteres (formato estándar)
+        if (placa.length > 6) {
+          placa = placa.substring(0, 6);
+          $(this).val(placa);
+        }
+        $('#placaPreview').text(placa || 'ABC123');
+      });
+      
+      // Simular proceso de reconocimiento de placa
+      $('#registroForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar formato de placa
+        const placa = $('#placa').val().toUpperCase();
+        const placaRegex = /^[A-Z0-9]{6}$/;
+        
+        if (!placaRegex.test(placa)) {
+          $.notify({
+            icon: "tim-icons icon-alert-circle-exc",
+            message: "Formato de placa inválido. Use 3 letras y 3 números (ej: ABC123)."
+          }, {
+            type: 'danger',
+            timer: 3000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            }
+          });
+          return;
+        }
+        
+        // Mostrar animación de procesamiento
+        $.notify({
+          icon: "tim-icons icon-scan",
+          message: "Procesando placa, espere por favor..."
+        }, {
+          type: 'info',
+          timer: 2000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          }
+        });
+        
+        // Simular tiempo de procesamiento (2 segundos)
+        setTimeout(function() {
+          // Generar ubicación aleatoria
+          const sectores = ['A', 'B', 'C', 'D'];
+          const sector = sectores[Math.floor(Math.random() * sectores.length)];
+          const numero = Math.floor(Math.random() * 50) + 1;
+          const ubicacion = `${sector}3-${numero}`;
+          
+          // Actualizar hora completa
+          const ahoraCompleto = new Date();
+          const opcionesCompletas = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+          };
+          
+          $('#ubicacionAsignada').text(ubicacion);
+          $('#horaRegistroCompleta').text(ahoraCompleto.toLocaleDateString('es-CO', opcionesCompletas));
+          $('#resultadoContainer').show();
+          
+          // Notificación de éxito
+          $.notify({
+            icon: "tim-icons icon-check-2",
+            message: `Placa ${placa} reconocida. Ubicación asignada: ${ubicacion}`
+          }, {
+            type: 'success',
+            timer: 5000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            }
+          });
+          
+          // Desplazar a la sección de resultados
+          $('html, body').animate({
+            scrollTop: $('#resultadoContainer').offset().top
+          }, 1000);
+          
+        }, 2000);
+      });
+    });
+  </script>
+</body>
+
+</html>
