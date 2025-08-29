@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <title>
+    Sistema de Alertas - Eichparking
+  </title>
+  <!-- Fonts and icons -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <!-- Nucleo Icons -->
+  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="../assets/css/black-dashboard.css?v=1.0.0" rel="stylesheet" />
+  <style>
+    .alert-badge {
+      position: relative;
+    }
+    .alert-badge[data-count]:after {
+      position: absolute;
+      right: -5px;
+      top: -5px;
+      content: attr(data-count);
+      padding: 3px 7px;
+      background: #ff0000;
+      color: white;
+      font-weight: bold;
+      border-radius: 50%;
+      font-size: 12px;
+    }
+    .camera-feed {
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    .camera-feed .camera-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      width: 100%;
+      font-size: 12px;
+    }
+    .alert-item {
+      border-left: 4px solid #fd5d93;
+      padding-left: 10px;
+      margin-bottom: 15px;
+      transition: all 0.3s;
+    }
+    .alert-item.critical {
+      border-left-color: #ff0000;
+      background-color: rgba(255, 0, 0, 0.05);
+    }
+    .alert-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    .timestamp {
+      font-size: 0.8em;
+      color: #9A9A9A;
+    }
+  </style>
+</head>
+
+<body class="">
+  <div class="wrapper">
+    <div class="sidebar">
+      <div class="sidebar-wrapper">
+        <div class="logo">
+          <a href="javascript:void(0)" class="simple-text logo-mini">
+            EP
+          </a>
+          <a href="javascript:void(0)" class="simple-text logo-normal">
+            EICHPARKING
+          </a>
+        </div>
+        <ul class="nav">
+          <li>
+            <a href="./dashboard.html">
+              <i class="tim-icons icon-chart-pie-36"></i>
+              <p>Panel Principal</p>
+            </a>
+          </li>
+          <li>
+            <a href="./map.html">
+              <i class="tim-icons icon-pin"></i>
+              <p>Mapas</p>
+            </a>
+          </li>
+          <li class="active">
+            <a href="./alertas.html">
+              <i class="tim-icons icon-bell-55 alert-badge" data-count="3"></i>
+              <p>Sistema de Alertas</p>
+            </a>
+          </li>
+          <li>
+            <a href="./user.html">
+              <i class="tim-icons icon-single-02"></i>
+              <p>Perfil</p>
+            </a>
+          </li>
+          <li>
+            <a href="./rtl.html">
+              <i class="tim-icons icon-world"></i>
+              <p>Soporte</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-absolute navbar-transparent">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <div class="navbar-toggle d-inline">
+              <button type="button" class="navbar-toggler">
+                <span class="navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+              </button>
+            </div>
+            <a class="navbar-brand" href="javascript:void(0)">Sistema de Alertas de Seguridad</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-bar navbar-kebab"></span>
+            <span class="navbar-toggler-bar navbar-kebab"></span>
+            <span class="navbar-toggler-bar navbar-kebab"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navigation">
+            <ul class="navbar-nav ml-auto">
+              <li class="search-bar input-group">
+                <button class="btn btn-link" id="search-button" data-toggle="modal" data-target="#searchModal">
+                  <i class="tim-icons icon-zoom-split"></i>
+                  <span class="d-lg-none d-md-block">Buscar</span>
+                </button>
+              </li>
+              <li class="dropdown nav-item">
+                <a href="javascript:void(0)" class="dropdown-toggle nav-link alert-badge" data-count="3" data-toggle="dropdown">
+                  <i class="tim-icons icon-sound-wave"></i>
+                  <p class="d-lg-none">
+                    Alertas
+                  </p>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right dropdown-navbar">
+                  <li class="nav-link">
+                    <a href="#" class="nav-item dropdown-item">Movimiento detectado en Cámara 3</a>
+                  </li>
+                  <li class="nav-link">
+                    <a href="javascript:void(0)" class="nav-item dropdown-item">Intento de acceso no autorizado</a>
+                  </li>
+                  <li class="nav-link">
+                    <a href="javascript:void(0)" class="nav-item dropdown-item">Vehículo permanece más de 24h</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="dropdown nav-item">
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                  <div class="photo">
+                    <img src="../assets/img/anime3.png" alt="Profile Photo">
+                  </div>
+                  <b class="caret d-none d-lg-block d-xl-block"></b>
+                  <p class="d-lg-none">
+                    Cerrar sesión
+                  </p>
+                </a>
+                <ul class="dropdown-menu dropdown-navbar">
+                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">Perfil</a></li>
+                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">Configuración</a></li>
+                  <li class="dropdown-divider"></li>
+                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">Cerrar sesión</a></li>
+                </ul>
+              </li>
+              <li class="separator d-lg-none"></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+      <!-- Contenido principal -->
+      <div class="content">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-category">Monitoreo en Tiempo Real</h5>
+                <h3 class="card-title">Cámaras de Seguridad</h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="camera-feed">
+                      <div style="background-color: #1e1e2f; height: 180px; display: flex; justify-content: center; align-items: center;">
+                        <i class="tim-icons icon-video-66" style="font-size: 40px; color: #5e5e5e;"></i>
+                      </div>
+                      <div class="camera-label">Entrada Principal</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="camera-feed">
+                      <div style="background-color: #1e1e2f; height: 180px; display: flex; justify-content: center; align-items: center;">
+                        <i class="tim-icons icon-video-66" style="font-size: 40px; color: #5e5e5e;"></i>
+                      </div>
+                      <div class="camera-label">Nivel 2 - Pasillo B</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="camera-feed">
+                      <div style="background-color: #1e1e2f; height: 180px; display: flex; justify-content: center; align-items: center;">
+                        <i class="tim-icons icon-video-66" style="font-size: 40px; color: #5e5e5e;"></i>
+                      </div>
+                      <div class="camera-label">Salida de Emergencia</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="camera-feed">
+                      <div style="background-color: #1e1e2f; height: 180px; display: flex; justify-content: center; align-items: center;">
+                        <i class="tim-icons icon-video-66" style="font-size: 40px; color: #5e5e5e;"></i>
+                      </div>
+                      <div class="camera-label">Área de Cajeros</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-category">Registro de Eventos</h5>
+                <h3 class="card-title">Historial de Alertas</h3>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table tablesorter">
+                    <thead class="text-primary">
+                      <tr>
+                        <th>Fecha/Hora</th>
+                        <th>Cámara</th>
+                        <th>Tipo de Alerta</th>
+                        <th>Nivel</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>fecha 1</td>
+                        <td>pasillo 1</td>
+                        <td>Movimiento sospechoso</td>
+                        <td>Media</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-info">Ver detalles</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>fecha 2</td>
+                        <td>Pasillo 2</td>
+                        <td>Intento de acceso no autorizado</td>
+                        <td>Alta</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-info">Ver detalles</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>fecha 3</td>
+                        <td>pasillo 3</td>
+                        <td>lugar disponible</td>
+                        <td>Media</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-info">Ver detalles</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>fecha 4</td>
+                        <td>pasillo 4</td>
+                        <td>Puerta abierta</td>
+                        <td>Baja</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-info">Ver detalles</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>fecha 5</td>
+                        <td>pasillo 5</td>
+                        <td>Vehículo abandonado</td>
+                        <td>Alta</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-info">Ver detalles</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-4">
+            <div class="card card-chart">
+              <div class="card-header">
+                <h5 class="card-category">Estadísticas de Alertas</h5>
+                <h3 class="card-title">Resumen Diario</h3>
+              </div>
+              <div class="card-body">
+                <div class="chart-area">
+                  <canvas id="alertChart"></canvas>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <i class="tim-icons icon-watch-time"></i> Actualizado hace 2 minutos
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-category">Alertas Recientes</h5>
+                <h3 class="card-title">Notificaciones</h3>
+              </div>
+              <div class="card-body">
+                <div class="alert-item critical">
+                  <h6>ALERTA CRÍTICA: Intento de acceso no autorizado</h6>
+                  <p>Se detectó un intento de forzar la cerradura en la entrada de servicio.</p>
+                  <span class="timestamp">Hace 15 minutos - Cámara 3</span>
+                </div>
+                
+                <div class="alert-item">
+                  <h6>Movimiento sospechoso detectado</h6>
+                  <p>Persona merodeando en área restringida por más de 10 minutos.</p>
+                  <span class="timestamp">Hace 42 minutos - Cámara 2</span>
+                </div>
+                
+                <div class="alert-item">
+                  <h6>Vehículo estacionado por tiempo prolongado</h6>
+                  <p>Vehículo con placa lleva más de 24 horas en el mismo lugar.</p>
+                  <span class="timestamp">Hace 1 hora - Cámara 5</span>
+                </div>
+                
+                <div class="alert-item">
+                  <h6>Puerta de acceso left abierta</h6>
+                  <p>Puerta de salida de emergencia en nivel 1 left abierta.</p>
+                  <span class="timestamp">Hace 2 horas - Cámara 4</span>
+                </div>
+                
+                <button type="button" class="btn btn-primary btn-block">Ver todas las alertas</button>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-category">Configuración</h5>
+                <h3 class="card-title">Opciones de Alertas</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label>Nivel de sensibilidad</label>
+                  <select class="form-control">
+                    <option>Baja</option>
+                    <option selected>Media</option>
+                    <option>Alta</option>
+                  </select>
+                </div>
+                
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <span class="form-check-sign"></span>
+                    Alertas por email
+                  </label>
+                </div>
+                
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <span class="form-check-sign"></span>
+                    Notificaciones push
+                  </label>
+                </div>
+                
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox">
+                    <span class="form-check-sign"></span>
+                    Alertas sonoras
+                  </label>
+                </div>
+                
+                <button type="button" class="btn btn-primary btn-block mt-3">Guardar configuración</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer class="footer">
+        <div class="container-fluid">
+          <ul class="nav">
+            <li class="nav-item">
+              <a href="javascript:void(0)" class="nav-link">
+                Eichparking
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="javascript:void(0)" class="nav-link">
+                Sobre nosotros
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="javascript:void(0)" class="nav-link">
+                Blog
+              </a>
+            </li>
+          </ul>
+          <div class="copyright">
+            ©
+            <script>
+              document.write(new Date().getFullYear())
+            </script> hecho con <i class="tim-icons icon-heart-2"></i> por
+            <a href="javascript:void(0)" target="_blank">Eichparking</a> - Tu lugar seguro para tu vehículo.
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!--   Core JS Files   -->
+  <script src="../assets/js/core/jquery.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <!-- Chart JS -->
+  <script src="../assets/js/plugins/chartjs.min.js"></script>
+  <!--  Notifications Plugin    -->
+  <script src="../assets/js/plugins/bootstrap-notify.js"></script>
+  <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/black-dashboard.min.js?v=1.0.0"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Simular notificaciones de alerta
+      setTimeout(function() {
+        $.notify({
+          icon: "tim-icons icon-bell-55",
+          message: "Nueva alerta: Movimiento detectado en Cámara 3"
+        }, {
+          type: 'warning',
+          timer: 5000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          }
+        });
+      }, 3000);
+      
+      // Gráfico de alertas
+      var alertChart = document.getElementById('alertChart').getContext('2d');
+      var gradientStroke = alertChart.createLinearGradient(0, 230, 0, 50);
+      gradientStroke.addColorStop(1, 'rgba(72,72,176,0.1)');
+      gradientStroke.addColorStop(0.4, 'rgba(72,72,176,0.0)');
+      gradientStroke.addColorStop(0, 'rgba(119,52,169,0)');
+      
+      new Chart(alertChart, {
+        type: 'bar',
+        data: {
+          labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+          datasets: [{
+            label: 'Alertas',
+            tension: 0.4,
+            borderWidth: 0,
+            pointRadius: 0,
+            borderColor: "#f5365c",
+            backgroundColor: gradientStroke,
+            data: [15, 12, 8, 7, 5, 3, 9],
+            maxBarThickness: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: false
+          },
+          tooltips: {
+            enabled: true
+          },
+          scales: {
+            yAxes: [{
+              gridLines: {
+                display: true,
+                drawBorder: false,
+                color: 'rgba(255,255,255,0.0)',
+                zeroLineColor: "transparent",
+              },
+              ticks: {
+                suggestedMin: 0,
+                suggestedMax: 20,
+                beginAtZero: true,
+                padding: 10,
+                fontColor: "#9a9a9a"
+              }
+            }],
+            xAxes: [{
+              gridLines: {
+                display: false,
+                drawBorder: false,
+                zeroLineColor: "transparent"
+              },
+              ticks: {
+                padding: 10,
+                fontColor: "#9a9a9a"
+              }
+            }]
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
